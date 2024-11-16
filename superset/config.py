@@ -258,7 +258,7 @@ SQLGLOT_DIALECTS_EXTENSIONS: dict[str, Dialects | type[Dialect]] = {}
 QUERY_SEARCH_LIMIT = 1000
 
 # Flask-WTF flag for CSRF
-WTF_CSRF_ENABLED = True
+WTF_CSRF_ENABLED = False
 
 # Add endpoints that need to be exempt from CSRF protection
 WTF_CSRF_EXEMPT_LIST = [
@@ -283,8 +283,10 @@ SHOW_STACKTRACE = False
 
 # Use all X-Forwarded headers when ENABLE_PROXY_FIX is True.
 # When proxying to a different port, set "x_port" to 0 to avoid downstream issues.
-ENABLE_PROXY_FIX = False
+ENABLE_PROXY_FIX = True
 PROXY_FIX_CONFIG = {"x_for": 1, "x_proto": 1, "x_host": 1, "x_port": 1, "x_prefix": 1}
+
+GUNS_QUOTATION_REQUEST_HEADERS = ["Referer"]
 
 # Configuration for scheduling queries from SQL Lab.
 SCHEDULED_QUERIES: dict[str, Any] = {}
@@ -598,7 +600,9 @@ DEFAULT_FEATURE_FLAGS.update(
 )
 
 # This is merely a default.
-FEATURE_FLAGS: dict[str, bool] = {}
+FEATURE_FLAGS: dict[str, bool] = {
+    "EMBEDDED_SUPERSET": True
+}
 
 # A function that receives a dict of all feature flags
 # (DEFAULT_FEATURE_FLAGS merged with FEATURE_FLAGS)
@@ -804,8 +808,14 @@ EXPLORE_FORM_DATA_CACHE_CONFIG: CacheConfig = {
 STORE_CACHE_KEYS_IN_METADATA_DB = False
 
 # CORS Options
-ENABLE_CORS = False
-CORS_OPTIONS: dict[Any, Any] = {}
+ENABLE_CORS = True
+CORS_OPTIONS: dict[Any, Any] = {
+    "supports_credentials": True, 
+    "allow_headers": "*", 
+    "expose_headers": "*", 
+    "resources": "*", 
+    "origins": ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:3000', 'http://127.0.0.1:3000', 'http://34.31.222.134:8080'],
+}
 
 # Sanitizes the HTML content used in markdowns to allow its rendering in a safe manner.
 # Disabling this option is not recommended for security reasons. If you wish to allow
@@ -1220,7 +1230,7 @@ SMTP_MAIL_FROM = "superset@superset.com"
 # If True creates a default SSL context with ssl.Purpose.CLIENT_AUTH using the
 # default system root CA certificates.
 SMTP_SSL_SERVER_AUTH = False
-ENABLE_CHUNK_ENCODING = False
+ENABLE_CHUNK_ENCODING = True
 
 # Whether to bump the logging level to ERROR on the flask_appbuilder package
 # Set to False if/when debugging FAB related issues like
@@ -1573,10 +1583,10 @@ DATABASE_OAUTH2_JWT_ALGORITHM = "HS256"
 DATABASE_OAUTH2_TIMEOUT = timedelta(seconds=30)
 
 # Enable/disable CSP warning
-CONTENT_SECURITY_POLICY_WARNING = True
+CONTENT_SECURITY_POLICY_WARNING = False
 
 # Do you want Talisman enabled?
-TALISMAN_ENABLED = utils.cast_to_boolean(os.environ.get("TALISMAN_ENABLED", True))
+TALISMAN_ENABLED = utils.cast_to_boolean(os.environ.get("TALISMAN_ENABLED", False))
 
 # If you want Talisman, how do you want it configured??
 TALISMAN_CONFIG = {
@@ -1603,11 +1613,13 @@ TALISMAN_CONFIG = {
             "'unsafe-inline'",
         ],
         "script-src": ["'self'", "'strict-dynamic'"],
+        "frame-ancestors": ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:3000', 'http://127.0.0.1:3000', 'http://34.31.222.134:8080'],
     },
     "content_security_policy_nonce_in": ["script-src"],
     "force_https": False,
     "session_cookie_secure": False,
 }
+
 # React requires `eval` to work correctly in dev mode
 TALISMAN_DEV_CONFIG = {
     "content_security_policy": {
@@ -1754,8 +1766,8 @@ GLOBAL_ASYNC_QUERIES_CACHE_BACKEND = {
 }
 
 # Embedded config options
-GUEST_ROLE_NAME = "Public"
-GUEST_TOKEN_JWT_SECRET = "test-guest-secret-change-me"
+GUEST_ROLE_NAME = "embed"
+GUEST_TOKEN_JWT_SECRET = "t3498fh9f283r8woef"
 GUEST_TOKEN_JWT_ALGO = "HS256"
 GUEST_TOKEN_HEADER_NAME = "X-GuestToken"
 GUEST_TOKEN_JWT_EXP_SECONDS = 300  # 5 minutes
